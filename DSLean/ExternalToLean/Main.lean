@@ -34,7 +34,7 @@ def parseExternal (cat : Name) (input : String) : CommandElabM Syntax := do
   let out := p.run ctx {env := e, options := default} (Parser.getTokenTable e) {cache := Parser.initCacheForInput input, pos := 0} -- TokenTable here might allow for non-unicode characters
   if out.hasError then
     throwError m!"Syntax error in input: {out.errorMsg}"
-  if out.pos.byteIdx != input.length then
+  if !(out.pos.atEnd input) then
     throwError m!"Syntax error in input: unexpected trailing characters {input.drop out.pos.byteIdx}"
   return out.stxStack.back
 
