@@ -29,7 +29,6 @@ external translate_Python where
 #check fromExternal translate_Python "True and False" -- True ∧ False : Prop
 
 
-
 #eval fromExternal translate_Python "int(1) + int(1)" -- (2 : ℤ)
 #eval fromExternal translate_Python "float(1) + float(1)" -- (2 : Float)
 

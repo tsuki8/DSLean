@@ -15,23 +15,17 @@ example (a b c : Real) :
   b + 1 ∈ Set.Icc 2 3.5 := by
     gappa
 
+
 example (y : ℝ) :
   y ∈ Set.Icc 0 1 →
   y * y * y ∈ Set.Icc 0 1 := by
     gappa
-    expose_names -- Some goals left over that automation couldn't solve by itself
-    have := right (by nlinarith)
-    nlinarith
 
 
 example (y : ℝ) :
   y ∈ Set.Icc 0 1 →
   y * (1-y) ∈ Set.Icc 0 0.5 := by
     gappa
-    · gappa_reduce_arrows
-      nlinarith
-    gappa_reduce_arrows
-    nlinarith
 
 
 
