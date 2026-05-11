@@ -336,7 +336,6 @@ partial def translateExpr (cat : Name) (patterns : Array ExternalEquivalence) (e
           if (← isDefEqGuarded pat_expr e) then
 
             let processBlank := fun e' br depth' => do
-              -- logInfo m!"Processing blanks. Started with {e_old}, changed to {e}, one of the blanks was {e'}"
               if ← isDefEqGuarded e_old e' then
                 throwError m!"Performed no reduction! started with {e_old}, changed to {e}, one of the blanks was {e'}"
               translateExpr cat patterns (← Core.betaReduce (← instantiateMVars e')) br (depth' + 1)

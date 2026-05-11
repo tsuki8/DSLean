@@ -194,4 +194,7 @@ elab "gappa" : tactic => do
 
   Lean.Elab.Tactic.evalTactic (← `(tactic| try grind ))
   Lean.Elab.Tactic.evalTactic (← `(tactic| all_goals try gappa_normalize ))
-  Lean.Elab.Tactic.evalTactic (← `(tactic| all_goals try grind ))
+  Lean.Elab.Tactic.evalTactic (← `(tactic| all_goals try grind )) -- Wait on the super compute-intensive automation until after the bespoke stuff has failed
+  Lean.Elab.Tactic.evalTactic (← `(tactic| all_goals try (gappa_reduce_arrows <;> nlinarith) ))
+
+  Lean.Elab.Tactic.evalTactic (← `(tactic| try expose_names)) -- If there's a goal left over, make it nice for the user to read and solve themselves

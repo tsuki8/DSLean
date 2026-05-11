@@ -25,7 +25,6 @@ def declareExternal (cat : Name) (patterns : Array (TSyntax `stx)) (target : TSy
   declareExternalElaborator k cat patterns ⟨k⟩ -- Declare an elaborator for this external syntax
   pure ()
 
-
 /-- Parse an input string according to the external syntax category `cat`, returning the corresponding `Syntax` object. Additionally makes sure there's no extra stuff hanging out at the end. TODO: ascii character byte vs character length (`runParserCategory`) -/
 def parseExternal (cat : Name) (input : String) : CommandElabM Syntax := do
   let p := Parser.categoryParser cat 0 |>.fn -- Process the syntax with our custom parser
@@ -80,7 +79,6 @@ partial def elabExternal (cat : Name) (input : Syntax) (expectedType? : Option E
                 return mkApp3 (mkConst ``NatCast.natCast [0]) t castInst (mkNatLit n)
               catch _ => return Lean.mkNatLit n
             | none => return mkNatLit n
-
         | _ => throwError m!"Internal assertion failed: malformed num syntax"
       | _ => throwError m!"Internal assertion failed: malformed num syntax"
     | _ => throwError m!"Internal assertion failed: malformed num syntax"
@@ -89,7 +87,7 @@ partial def elabExternal (cat : Name) (input : Syntax) (expectedType? : Option E
     match input.getArg 0 with
     | .node _ `scientific contents =>
       match contents.toList with
-      | .atom _ val :: _ =>
+      | .atom _ _ :: _ =>
         throwError "TODO: scientific syntax elaboration"
         -- match val.toFloat? with
         -- | some f =>
