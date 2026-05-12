@@ -7,13 +7,12 @@ import DSLean.LeanM2
 /- `gappa` tactic: interval arithmetic via the Gappa solver -/
 
 
-
-example (a b c : Real) :
-  c ∈ Set.Icc (-0.3 : Real) (-0.1 : Real) ∧
-  (2 * a ∈ Set.Icc 3 4 → b + c ∈ Set.Icc 1 2) ∧
-  a - c ∈ Set.Icc 1.9 2.05 →
-  b + 1 ∈ Set.Icc 2 3.5 := by
+example (x : ℝ) (y : ℝ) :
+  x ∈ Set.Icc 0 1 →
+  y ∈ Set.Icc (-1) 1 →
+  2 * x + y ∈ Set.Icc (-1) 3 := by
     gappa
+
 
 
 example (y : ℝ) :
@@ -26,6 +25,25 @@ example (y : ℝ) :
   y ∈ Set.Icc 0 1 →
   y * (1-y) ∈ Set.Icc 0 0.5 := by
     gappa
+
+
+example (a b c : Real) :
+  c ∈ Set.Icc (-0.3 : Real) (-0.1 : Real) ∧
+  (2 * a ∈ Set.Icc 3 4 → b + c ∈ Set.Icc 1 2) ∧
+  a - c ∈ Set.Icc 1.9 2.05 →
+  b + 1 ∈ Set.Icc 2 3.5 := by
+    gappa
+
+
+example (x : ℝ) (y : ℝ) :
+  x ∈ Set.Icc 0 1 →
+  y ∈ Set.Icc 0 1 →
+  x * x * y ∈ Set.Icc 0 1 := by
+    gappa
+    have := right.2 (by nlinarith)
+    nlinarith
+
+
 
 
 
@@ -42,9 +60,15 @@ example : isODEsolution
   desolve
 
 example : isODEsolution
+  (fun x => fun y => x * deriv y x + y x = 0)
+  (fun C _ _ x => C/x) := by
+  desolve
+
+example : isODEsolution
   (fun x => fun y => deriv y x + y x = 1)
   (fun C _ _ x => (C + Real.exp x) * (Real.exp (-x))) := by
   desolve
+
 
 /- If the witness Sage returns is not the same as what was provided, the user is asked to prove their equivalence -/
 example : isODEsolution

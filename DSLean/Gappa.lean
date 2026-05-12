@@ -16,6 +16,7 @@ external Gappa_input where
   "(" x "/" y ")" <== x / y
   "sqrt(" x ")" <== Real.sqrt x
   "-" x <== - (x:Real)
+  "|" x "|" <== abs x
 
   "(" x "->" y ")" <== x → y
   "(" x "/\\" y ")" <== x ∧ y
@@ -100,6 +101,7 @@ external Gappa_output (numberCast := Int.ofNat) where
   "Reals.Rdefinitions.Rdiv" x y             ==> x / y
   "Reals.Rdefinitions.Ropp" x               ==> - (x:Real)
   "Reals.R_sqrt.sqrt" x                     ==> Real.sqrt x
+  "Reals.Rbasic_fun.Rabs" x                 ==> (abs x : Real)
 
   "Gappa.Gappa_pred_bnd.constant1" a b c          ==> by gappa_constant_bound <;> sorry -- Equivalents of `gappa`'s automation tactics, mostly implemented above
   "Gappa.Gappa_tree.simplify" a                   ==> by gappa_simplify <;> sorry -- If a sorry is reached here, it is NOT included in the final proof: instead, the script below replaces it with a goal to be solved by the user.
