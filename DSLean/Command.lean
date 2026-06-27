@@ -21,8 +21,17 @@ syntax (name := bijectiveDSL) "external" ident ("(" "numberCast" ":=" term ")")?
 def bijectiveDSLImpl : CommandElab := fun stx => do
   let (name, castFn, lines) ←
     match stx with
-    | `(external $name:ident ( numberCast := $castFnStx:term ) where $lines:bijectiveDSLline*) =>
-      pure (name, some <| ← liftTermElabM <| elabTerm castFnStx none, lines)
+    | `(external $name:ident ( numberCast := $castFnStx:term ) where $lines:bijectiveDSLline*) => do
+      -- Fully elaborate the cast function, forcing synthetic/instance
+      -- metavariables to be synthesized and instantiated. Otherwise `castFn`
+      -- (e.g. `@Nat.cast ℝ ?inst`) would be stored with a dangling instance
+      -- mvar and later reuse during `fromExternal` fails with
+      -- "unknown metavariable" when a bare numeral is elaborated.
+      let castFn ← liftTermElabM do
+        let e ← elabTerm castFnStx none
+        Term.synthesizeSyntheticMVarsNoPostponing
+        instantiateMVars e
+      pure (name, some castFn, lines)
     | `(external $name:ident where $lines:bijectiveDSLline*) =>
       pure (name, none, lines)
     | _ => throwUnsupportedSyntax
@@ -58,8 +67,14 @@ syntax (name := surjectiveDSL) "external" ident ("(" "numberCast" ":=" term ")")
 def surjectiveDSLImpl : CommandElab := fun stx => do
   let (name, castFn, lines) ←
     match stx with
-    | `(external $name:ident ( numberCast := $castFnStx:term ) where $lines:surjectiveDSLline*) =>
-      pure (name, some <| ← liftTermElabM <| elabTerm castFnStx none, lines)
+    | `(external $name:ident ( numberCast := $castFnStx:term ) where $lines:surjectiveDSLline*) => do
+      -- See the note in `bijectiveDSLImpl`: close over any synthetic/instance
+      -- metavariables so the stored cast function is reusable later.
+      let castFn ← liftTermElabM do
+        let e ← elabTerm castFnStx none
+        Term.synthesizeSyntheticMVarsNoPostponing
+        instantiateMVars e
+      pure (name, some castFn, lines)
     | `(external $name:ident where $lines:surjectiveDSLline*) =>
       pure (name, none, lines)
     | _ => throwUnsupportedSyntax
